@@ -1,0 +1,9 @@
+okay the first thing u have to do is install the libraries required
+#COMMAND
+pip install -r requiremnts.txt
+
+okay u r good to go now run this 
+#COMMAND
+python za.py
+
+enter artist
