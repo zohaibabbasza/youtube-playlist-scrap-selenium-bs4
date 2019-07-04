@@ -2,24 +2,53 @@ from bs4 import BeautifulSoup as bs
 import requests
 import csv
 from itertools import zip_longest
+from time import sleep
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+import random
+
+caps = DesiredCapabilities.CHROME
+
+
+caps["marionette"] = True
+
+geckodriver="./chromedriver"
+
+
+
+
+
+def scrollDown(browser, numberOfScrollDowns):
+    body = browser.find_element_by_tag_name("body")
+    while numberOfScrollDowns >=0:
+        body.send_keys(Keys.PAGE_DOWN)
+        numberOfScrollDowns -= 1
+    return browser
 
 
 def get_link_id(artist):
     #LINK ID HERE
-    if " " in artist:
-        artist = artist.replace(" ",'+')
-        print(artist)
-    r = requests.get('https://www.youtube.com/results?search_query={0}&sp=EgIQAw%253D%253D'.format(artist))
-    page = r.text
-    soup=bs(page,'html.parser')
-    za=soup.find_all('a',{'class':'yt-lockup-playlist-item-title yt-uix-sessionlink spf-link'})
-    i =0
-    ids = []  
-    while i != len(za):
-        z = za[i].get('href').split('list=')
-        ids.append(z[1])
-        i+=2
-    return ids
+
+    driver = webdriver.Chrome(geckodriver)
+    print("Looking For Playlist")
+    driver.get("https://www.youtube.com/results?search_query={0}&sp=EgIQAw%253D%253D".format(artist))
+    driver = scrollDown(driver,800)
+    time.sleep(10)
+    user_data = driver.find_elements_by_xpath('//*[@id="view-more"]/a')
+    links = []
+    for i in user_data:
+                z= i.get_attribute('href').split('list=')
+                links.append(z[1])
+                
+
+    print("{0} Playlist Found".format(len(links)))
+    driver.close()
+    return links
 
 def write_to_csv(artist,links,titles):
     d = [titles, links]
@@ -56,12 +85,13 @@ def get_url_title(artist):
             try:
                 titles.append(h4[l].text)
             except IndexError:
-                titles.append(h4[l].text)
+                titles.append('null')
             try:
                 link.append('www.youtube.com' + links[l].get('href'))
             except IndexError:
                 link.append('null')    
         write_to_csv(artist,link,titles)
+        time.sleep(random.randint(5,30))
     print("Successfully Done")
 
 def main():
