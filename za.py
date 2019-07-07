@@ -38,7 +38,7 @@ def get_link_id(artist):
     print("Looking For Playlist")
     driver.get("https://www.youtube.com/results?search_query={0}&sp=EgIQAw%253D%253D".format(artist))
     driver = scrollDown(driver,800)
-    time.sleep(10)
+    time.sleep(5)
     user_data = driver.find_elements_by_xpath('//*[@id="view-more"]/a')
     links = []
     for i in user_data:
@@ -65,6 +65,7 @@ def get_url_title(artist):
     list_ids = []
     list_ids = get_link_id(artist)
     print("scraping started....")
+    z = 0
     for k in list_ids:
         for_title = 'https://www.youtube.com/watch?v=pRpeEdMmmQ0&list='
         for_url = 'https://www.youtube.com/playlist?list='
@@ -89,9 +90,9 @@ def get_url_title(artist):
             try:
                 link.append('www.youtube.com' + links[l].get('href'))
             except IndexError:
-                link.append('null')    
+                link.append('null')
         write_to_csv(artist,link,titles)
-        time.sleep(random.randint(5,30))
+        time.sleep(random.randint(0,20))
     print("Successfully Done")
 
 def main():

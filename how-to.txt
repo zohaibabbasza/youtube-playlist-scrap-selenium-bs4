@@ -7,3 +7,5 @@ okay u r good to go now run this
 python za.py
 
 enter artist
+
+please check your version of google chrome if the given chrome driver dosent work please download from here http://chromedriver.chromium.org/downloads and you will be good to go.
